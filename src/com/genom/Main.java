@@ -19,6 +19,7 @@ public class Main {
     String NepalString = "";
     String WuhanString = "";
     HashMap<String, Integer> repetitionNumberHash;
+    HashMap<String, Integer> mostFrequentHash;
     HashMap<String, String> oneCharacterDifferenceHash;
     HashMap<String, Integer> WuhanHash;
     HashMap<String, Integer> NepalHash;
@@ -31,6 +32,7 @@ public class Main {
         repetitionNumberHash = new HashMap<String, Integer>();
         WuhanHash = new HashMap<String, Integer>();
         NepalHash = new HashMap<String, Integer>();
+        mostFrequentHash = new HashMap<String, Integer>();
         oneCharacterDifferenceHash = new HashMap<String, String>();
 
     }
@@ -50,26 +52,20 @@ public class Main {
         }
     }
 
+
     public void findSearchTextForRepetition(int length){
 
         for (int i=0; i<getCovidString().length()-length+1; i++){
             repetition(getCovidString().substring(0+i,length+i),length);
         }
     }
-
-    public void findSearchTextForDiffenceChar(int length){
+    public void findSearchTextForReverse(int length){
 
         for (int i=0; i<getCovidString().length()-length+1; i++){
-            searchDifference(getCovidString().substring(0+i,length+i),length);
+            reverseCompliment(getCovidString().substring(0+i,length+i),length);
         }
     }
 
-    public void searchDifference(String searchText, int length){
-        for (int i=0; i<getCovidString().length()-length+1; i++){
-            findDifference(searchText,getCovidString().substring(0+i,length+i));
-        }
-
-    }
 
     public int getRepetationSize(){
         return getRepetitionNumberHash().size();
@@ -93,6 +89,14 @@ public class Main {
 
     public void setNepalString(String nepalString) {
         NepalString = nepalString;
+    }
+
+    public HashMap<String, Integer> getMostFrequentHash() {
+        return mostFrequentHash;
+    }
+
+    public void setMostFrequentHash(HashMap<String, Integer> mostFrequentHash) {
+        this.mostFrequentHash = mostFrequentHash;
     }
 
     public void setWuhanString(String wuhanString) {
@@ -124,7 +128,12 @@ public class Main {
         Main main;
 
         Scanner in = new Scanner(System.in);
-        System.out.print("Enter your name: ");
+        System.out.print("Enter a number: \n " +
+                "1= Most Frequent k mers For Wuhan  \n" +
+                "2= Most Frequent k mers For Nepal \n" +
+                "3= Difference Wuhan and Nepal \n" +
+                "4= Reverse Complement For Nepal \n" +
+                "5= Reverse Complement For Wuhan" );
         String number = in.nextLine();
 
         switch (number){
@@ -133,7 +142,7 @@ public class Main {
                 length = 5; previousSize = 0; main = new Main();
                 System.out.println("Wuhan RNA's lenght is "+main.getWuhanString().length()+"\n"+main.getWuhanString());
                 main.setCovidString(main.getWuhanString());
-                main.findAllRepetationandWrite("Covids\\WUHANREPETITION.txt");
+                main.findAllRepetationandWrite("Covids\\WUHANREPETITION.txt",1);
                 break;
 
             case "2":
@@ -141,52 +150,156 @@ public class Main {
                 length = 5; previousSize = 0;  main = new Main();
                 System.out.println("Nepal RNA's lenght is "+main.getNepalString().length()+"\n"+main.getNepalString());
                 main.setCovidString(main.getNepalString());
-                main.findAllRepetationandWrite("Covids\\NEPALREPETITION.txt");
+                main.findAllRepetationandWrite("Covids\\NEPALREPETITION.txt",1);
                 break;
             case "3":
+                ArrayList<String> sameRepetition = new ArrayList<>();
                 System.out.println("Ucuncu Kisim");
                 main = new Main();
                 main.setNepalHash( main.readTxtFileToHash("Covids\\NEPALREPETITION.txt"));
                 System.out.println("============== Nepal Repatition Keys =================");
-                for (String  key : main.getNepalHash().keySet())
-                    System.out.println(key);
+                /*for (String  key : main.getNepalHash().keySet())
+                    System.out.println(key);*/
                 main.setWuhanHash( main.readTxtFileToHash("Covids\\WUHANREPETITION.txt"));
                 System.out.println("================  Wuhan Repatition Keys ==============");
-                for (String  key : main.getWuhanHash().keySet())
+                /*for (String  key : main.getWuhanHash().keySet())
+                    System.out.println(key);*/
+                System.out.println("================  Common in two File  ==============");
+                for (String keyNepal : main.getNepalHash().keySet())
+                    for (String keyWuhan : main.getWuhanHash().keySet())
+                        if(keyNepal.compareTo(keyWuhan) == 0)
+                            sameRepetition.add(keyNepal);
+
+                for(String key : sameRepetition)
                     System.out.println(key);
+                break;
+
+            case "4":
+                main = new Main();
+                System.out.println("Reverse Complement For Nepal");
+                main.setCovidString(main.getNepalString());
+                main.findAllRepetationandWrite("Covids\\NEPALREVERSECOMPLEMENT.txt",2);
+                break;
+
+            case "5":
+                main = new Main();
+                System.out.println("Reverse Complement For Wuhan");
+                main.setCovidString(main.getWuhanString());
+                main.findAllRepetationandWrite("Covids\\WUHANREVERSECOMPLEMENT.txt",2);
                 break;
 
         }
 
-                        // Find 1 character difference ===========================
 
-       /* Main main = new Main();
-        main.setCovidString(main.getWuhanString());
-        main.findSearchTextForDiffenceChar(14);
-        System.out.println(main.getOneCharacterDifferenceHash());
-        //main.findDifference("Yasin","Yasim");*/
-
-
-       /*Main main = new Main();
-        main.writeHashToTxtFile();*/
 
     }
 
-    public void findAllRepetationandWrite(String filePath){
+    public void reverseCompliment(String sequence,int length){
+        char[] oneChar = sequence.toCharArray();
+        char[] reverseChar = sequence.toCharArray();
+        int a = 0;
+        for ( int i = oneChar.length-1; i >=0  ; i--,a++) { //a-t-g-c
+            if (oneChar[i] == 'a')
+                reverseChar[a] = 't';
+            else if (oneChar[i] == 't')
+                reverseChar[a] = 'a';
+            else if (oneChar[i] == 'g')
+                reverseChar[a] = 'c';
+            else if (oneChar[i] == 'c')
+                reverseChar[a] = 'g';
+        }
+        System.out.println("Sequence =  " +sequence);
+        System.out.println("Reverse Comp = " + new String(reverseChar));
+        repetition(new String(reverseChar),length);
+
+
+    }
+
+
+    /*public void findAllRepetationandWrite(String filePath){
         int length =5; int previousSize =0;
-        while(true){
+        while(length<=7){
              findSearchTextForRepetition(length);
             if ( (getRepetationSize()-previousSize) > 0){
                 System.out.println("Lengt of Searching Key => "+length);
                 System.out.println("Number Of Repetation => "+ (getRepetationSize()-previousSize) );
                 previousSize = getRepetationSize();
+                mostFrequent(getRepetitionNumberHash());
+                repetitionNumberHash.clear();
                 length++;
             }
             else
                 break;
         }
-        writeHashToTxtFile(getRepetitionNumberHash(),filePath);   //"Covids\\WUHANREPETITION.txt"
+        //orderHash(filePath);
+       // writeHashToTxtFile(getRepetitionNumberHash(),filePath);   //"Covids\\WUHANREPETITION.txt"
 
+    }*/
+    public void findAllRepetationandWrite(String filePath, int value){
+        int length =5; int previousSize =0;
+        while(true){
+            if (value == 2)
+                findSearchTextForReverse(length);
+            else
+                findSearchTextForRepetition(length);
+            if ( getRepetationSize() > 0){
+                System.out.println("Lengt of Searching Key => "+length);
+                System.out.println("Number Of Repetation => "+ (getRepetationSize()-previousSize) );
+                previousSize = getRepetationSize();
+                mostFrequent(getRepetitionNumberHash(),filePath);
+                repetitionNumberHash.clear();
+                length++;
+            }
+            else
+                break;
+        }
+        //orderHash(filePath);
+        // writeHashToTxtFile(getRepetitionNumberHash(),filePath);   //"Covids\\WUHANREPETITION.txt"
+
+    }
+
+    public void mostFrequent(HashMap<String, Integer> hashMap, String filePath){
+        int a = 0;
+        for (String key : hashMap.keySet())
+        {
+            if ( hashMap.get(key) > a  )
+                a = hashMap.get(key);
+            //System.out.println(key + ":" + hashMap.get(key) );
+        }
+        for (String key : hashMap.keySet()){
+            if(hashMap.get(key) == a)
+                mostFrequentHash.put(key , a);
+        }
+
+       /* for (String key : mostFrequentHash.keySet())
+        {
+            System.out.println(key + ":" + mostFrequentHash.get(key) );
+        }*/
+        orderHash(filePath);
+    }
+
+    public void orderHash(String filePath){
+        Map<String, Integer> treeMap = new TreeMap<String, Integer>(
+                new Comparator<String>() {
+                    @Override
+                    public int compare(String s1, String s2) {
+                        if (s1.length() < s2.length()) {
+                            return -1;
+                        } else if (s1.length() > s2.length()) {
+                            return 1;
+                        } else {
+                            return s1.compareTo(s2);
+                        }
+                    }
+                });
+
+        treeMap.putAll(getMostFrequentHash());
+
+        for (Map.Entry<String, Integer> entry : treeMap.entrySet())
+            System.out.println("Key = " + entry.getKey() +
+                    ", Value = " + entry.getValue());
+
+        writeHashToTxtFile(treeMap,filePath);   //"Covids\\WUHANREPETITION.txt"
     }
 
     public void findDifference(String first, String second){
@@ -248,7 +361,7 @@ public class Main {
         return map;
     }
 
-    public void writeHashToTxtFile( HashMap<String, Integer> hMapNumbers, String filePathName){
+    public void writeHashToTxtFile( Map<String, Integer> hMapNumbers, String filePathName){
 
         //new file object
         File file = new File(filePathName);
@@ -285,27 +398,3 @@ public class Main {
 
 
 }
-
-
-
-
-
-/* System.out.println("Korona alacağımız önlemlerden daha güçlü değildir.");
-        String NepalString = new String(Files.readAllBytes(Paths.get(("Covids\\NEPAL.txt"))));	//Input File read
-        String WuhanString = new String(Files.readAllBytes(Paths.get(("Covids\\WUHAN.txt"))));	//Input File read
-        NepalString=NepalString.replaceAll(" ","");
-        WuhanString=WuhanString.replaceAll(" ","");
-        String pureNepal="";
-        for (int i=0;i<NepalString.length();i++){
-            if(NepalString.charAt(i)=='a' || NepalString.charAt(i)=='t' ||NepalString.charAt(i)=='c' ||NepalString.charAt(i)=='g' ){
-                pureNepal=pureNepal+NepalString.charAt(i);
-            }
-        }
-        String pureWuhan="";
-        for (int i=0;i<WuhanString.length();i++){
-            if(WuhanString.charAt(i)=='a' || WuhanString.charAt(i)=='t' ||WuhanString.charAt(i)=='c' ||WuhanString.charAt(i)=='g' ){
-                pureWuhan=pureWuhan+WuhanString.charAt(i);
-            }
-        }
-        System.out.println("Nepal RNA's lenght is "+pureNepal.length()+"\n"+pureNepal);
-        System.out.println("Wuhan RNA's lenght is "+pureWuhan.length()+"\n"+pureWuhan);*/
