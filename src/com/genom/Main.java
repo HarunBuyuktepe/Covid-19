@@ -7,7 +7,6 @@ import java.util.*;
 
 public class Main {
 
-    String ExampleString;
     String covidString = "";
     String NepalString = "";
     String WuhanString = "";
@@ -19,7 +18,6 @@ public class Main {
 
 
     public Main() throws IOException {
-        ExampleString = "1234544466123456767681234587678612346767612345";
         NepalString = readTxtFile("Covids\\NEPAL.txt");
         WuhanString = readTxtFile("Covids\\WUHAN.txt");
         repetitionNumberHash = new HashMap<String, Integer>();
@@ -46,7 +44,7 @@ public class Main {
         }
     }
 
-    //Take from string from sequence which you want to search
+    //Take  string from sequence which you want to search
     public void findSearchTextForRepetition(int length){
 
         for (int i=0; i<getCovidString().length()-length+1; i++){
@@ -225,9 +223,6 @@ public class Main {
             else
                 break;
         }
-        //orderHash(filePath);
-        // writeHashToTxtFile(getRepetitionNumberHash(),filePath);   //"Covids\\WUHANREPETITION.txt"
-
     }
     //find the most frequent
     public void mostFrequent(HashMap<String, Integer> hashMap, String filePath){
@@ -242,11 +237,6 @@ public class Main {
             if(hashMap.get(key) == a)
                 mostFrequentHash.put(key , a);
         }
-
-       /* for (String key : mostFrequentHash.keySet())
-        {
-            System.out.println(key + ":" + mostFrequentHash.get(key) );
-        }*/
         orderHash(filePath);
     }
     //Order the string as length which we found repetition
@@ -308,13 +298,7 @@ public class Main {
             }
         }
 
-        /*for (String key : map.keySet())
-        {
-            System.out.println(key + ":" + map.get(key));
-        }*/
         reader.close();
-
-        //System.out.println(map);
         return map;
     }
 
