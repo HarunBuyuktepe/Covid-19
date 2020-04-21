@@ -5,13 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-/*
-* 1- 5 ten baslayarak artan tekrarlari bul
-* 2-  En cok tekrar eden en uzun stringler
-* 3- 2 txt dosyasinda ortak olan tekrarlar
-* 4- 1 karakter farkli olan tekrarlari yazdir
-* */
-
 public class Main {
 
     String ExampleString;
@@ -41,6 +34,7 @@ public class Main {
         return repetitionNumberHash;
     }
 
+    //Find the number of Repetition in hear
     public void repetition(String searchText, int length){
         int numberOfRepetition = 0;
         for (int i=0; i<getCovidString().length()-length+1; i++){
@@ -52,13 +46,15 @@ public class Main {
         }
     }
 
-
+    //Take from string from sequence which you want to search
     public void findSearchTextForRepetition(int length){
 
         for (int i=0; i<getCovidString().length()-length+1; i++){
             repetition(getCovidString().substring(0+i,length+i),length);
         }
     }
+
+    //take reverse complement of string which you take
     public void findSearchTextForReverse(int length){
 
         for (int i=0; i<getCovidString().length()-length+1; i++){
@@ -129,11 +125,11 @@ public class Main {
 
         Scanner in = new Scanner(System.in);
         System.out.print("Enter a number: \n " +
-                "1= Most Frequent k mers For Wuhan  \n" +
-                "2= Most Frequent k mers For Nepal \n" +
-                "3= Difference Wuhan and Nepal \n" +
-                "4= Reverse Complement For Nepal \n" +
-                "5= Reverse Complement For Wuhan" );
+                "1= Most Frequent k mers For Wuhan in (Covids\\WUHANREPETITION.txt) file \n" +
+                "2= Most Frequent k mers For Nepal in (Covids\\NEPALREPETITION.txt) file\n" +
+                "3= Same Value Wuhan and Nepal \n" +
+                "4= Reverse Complement For Nepal in (Covids\\NEPALREVERSECOMPLEMENT.txt) file \n" +
+                "5= Reverse Complement For Wuhan in  (Covids\\WUHANREVERSECOMPLEMENT.txt) file" );
         String number = in.nextLine();
 
         switch (number){
@@ -154,16 +150,9 @@ public class Main {
                 break;
             case "3":
                 ArrayList<String> sameRepetition = new ArrayList<>();
-                System.out.println("Ucuncu Kisim");
                 main = new Main();
                 main.setNepalHash( main.readTxtFileToHash("Covids\\NEPALREPETITION.txt"));
-                System.out.println("============== Nepal Repatition Keys =================");
-                /*for (String  key : main.getNepalHash().keySet())
-                    System.out.println(key);*/
                 main.setWuhanHash( main.readTxtFileToHash("Covids\\WUHANREPETITION.txt"));
-                System.out.println("================  Wuhan Repatition Keys ==============");
-                /*for (String  key : main.getWuhanHash().keySet())
-                    System.out.println(key);*/
                 System.out.println("================  Common in two File  ==============");
                 for (String keyNepal : main.getNepalHash().keySet())
                     for (String keyWuhan : main.getWuhanHash().keySet())
@@ -194,6 +183,7 @@ public class Main {
 
     }
 
+    //find reverse complemet of string
     public void reverseCompliment(String sequence,int length){
         char[] oneChar = sequence.toCharArray();
         char[] reverseChar = sequence.toCharArray();
@@ -216,31 +206,13 @@ public class Main {
     }
 
 
-    /*public void findAllRepetationandWrite(String filePath){
-        int length =5; int previousSize =0;
-        while(length<=7){
-             findSearchTextForRepetition(length);
-            if ( (getRepetationSize()-previousSize) > 0){
-                System.out.println("Lengt of Searching Key => "+length);
-                System.out.println("Number Of Repetation => "+ (getRepetationSize()-previousSize) );
-                previousSize = getRepetationSize();
-                mostFrequent(getRepetitionNumberHash());
-                repetitionNumberHash.clear();
-                length++;
-            }
-            else
-                break;
-        }
-        //orderHash(filePath);
-       // writeHashToTxtFile(getRepetitionNumberHash(),filePath);   //"Covids\\WUHANREPETITION.txt"
-
-    }*/
+    //Find all repetition as k(5,...) value and write the file
     public void findAllRepetationandWrite(String filePath, int value){
         int length =5; int previousSize =0;
         while(true){
-            if (value == 2)
+            if (value == 2)  //for reverse Complement
                 findSearchTextForReverse(length);
-            else
+            else            //for others
                 findSearchTextForRepetition(length);
             if ( getRepetationSize() > 0){
                 System.out.println("Lengt of Searching Key => "+length);
@@ -257,7 +229,7 @@ public class Main {
         // writeHashToTxtFile(getRepetitionNumberHash(),filePath);   //"Covids\\WUHANREPETITION.txt"
 
     }
-
+    //find the most frequent
     public void mostFrequent(HashMap<String, Integer> hashMap, String filePath){
         int a = 0;
         for (String key : hashMap.keySet())
@@ -277,7 +249,7 @@ public class Main {
         }*/
         orderHash(filePath);
     }
-
+    //Order the string as length which we found repetition
     public void orderHash(String filePath){
         Map<String, Integer> treeMap = new TreeMap<String, Integer>(
                 new Comparator<String>() {
@@ -300,21 +272,6 @@ public class Main {
                     ", Value = " + entry.getValue());
 
         writeHashToTxtFile(treeMap,filePath);   //"Covids\\WUHANREPETITION.txt"
-    }
-
-    public void findDifference(String first, String second){
-        int numberOfDifference = 0;
-       // String one = "Yacin"; String two = "Yasin";
-        char[] oneChar = first.toCharArray(); char[] twoChar = second.toCharArray();
-
-        for (int i = 0; i<oneChar.length; i++)
-            if (oneChar[i] != twoChar[i])
-                numberOfDifference++;
-
-        if (numberOfDifference == 1) {
-            oneCharacterDifferenceHash.put(first,second);
-        }
-
     }
 
 
